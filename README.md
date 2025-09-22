@@ -56,6 +56,14 @@ At 09:06 we had some construction vibration sounds, but it wasn't as bad as it u
 
 Continued to run until completed. Alex would like less data total. Will run over the weekend at one frame a minute. In new folder.
 
+
+### 2025-09-22
+Weekend run was still going strong. Dot has moved into the top-middle. A quick look at the data shows that it first wandered down off the screen, and then back up. We might be able to guess very long time-scale sinusoidal movement?
+
+Took Max framerate (52.37 fps) video for 3 minutes in its own folder
+
+Resumed one frame per minute snapshots. Took voltage with handheld voltmeter, found that it is 2.622 V. Has not been adjusted since 2022-09-18.
+
 ## Questions Jeff has about things
 ### FITS Format
 I (Jeff) was reading the [FITS spec](https://fits.gsfc.nasa.gov/fits_standard.html) and its meaning was pretty opaque to me. 
