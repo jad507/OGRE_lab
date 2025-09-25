@@ -49,12 +49,25 @@ Voltage set to 2.6. Gain set to 4. Binning disabled.
 
 TODO: add test information for this day.
 
-Machine was run overnight, continuing to take images once a second for 10000 frames. Should be done around 11 the next morning.
+stability: high framerate with fan on
+
+fanoff: high framerate (will need to calculate framerate. likely 25, 50 or 52.37) with fan off
+
+longrun: Secondly data for a long time. Leads to a LOT of images, so secondly long-runs are no longer recommended
+
+nightvideo: high framerate before overnight run
+
+overnightvideo: minutely images over night.
+
+
+Machine was run overnight, continuing to take images once a *minute* for 10,000 frames.
 
 ### 2025-09-19
-At 09:06 we had some construction vibration sounds, but it wasn't as bad as it usually is. Unclear on if it will show up in the data. It had a bit of a spike around 09:11, again at 9:28.
+At 09:06 we had some construction vibration sounds, but it wasn't as bad as it usually is. Unclear on if it will show up in the data. It had a bit of a spike around 09:11, again at 9:28. Wasn't paying attention to construction for the rest of the day.
 
-Continued to run until completed. Alex would like less data total. Will run over the weekend at one frame a minute. In new folder.
+Continued to run from previous night until 1373 frames. Stopped at 15:04. 
+
+Alex would like less data total. Will run over the weekend at one frame a minute. In new folder.
 
 
 ### 2025-09-22
