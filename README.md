@@ -77,6 +77,14 @@ Took Max framerate (52.37 fps) video for 3 minutes in its own folder
 
 Resumed one frame per minute snapshots. Took voltage with handheld voltmeter, found that it is 2.622 V. Has not been adjusted since 2022-09-18.
 
+### 2025-09-23
+
+
+### 2025-09-24
+
+### 2025-09-25
+
+
 ## Questions Jeff has about things
 ### FITS Format
 I (Jeff) was reading the [FITS spec](https://fits.gsfc.nasa.gov/fits_standard.html) and its meaning was pretty opaque to me. 
