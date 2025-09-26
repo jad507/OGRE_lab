@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the code that is meant to analyze the results of the stability tests on the reverse telescope system. 
+This is the code that is meant to analyze the results of the stability tests on the reverse telescope system.
 
 
 ## Test settings
@@ -83,6 +83,8 @@ Resumed one frame per minute snapshots. Took voltage with handheld voltmeter, fo
 ### 2025-09-24
 
 ### 2025-09-25
+### 2025-09-26
+During some Nate tests at 1:30 it was discovered that we were disconnected from the camera and the dot had moved off screen as we were touching things. Dot was refound, no changes to collimation, but does not map perfectly onto past data.
 
 
 ## Questions Jeff has about things
@@ -101,3 +103,19 @@ So, a few things seem possible (all confirmed in a conversation with James):
 It seems like we're pretty keen to stay on 1/833, so let's just get rid of that from the filename.
 We're pretty keen to switch to per-test folders.
 I would like to get greater detail on the voltage and fix it in place more precisely. I also want to take a look at the max value and set voltage so that max value is like 200 out of 255 in greyscale. It probably doesn't matter.
+
+
+## accelerometer data
+Code written by Nate Hamme
+Hardware is: 
+
+-two 3-axis accelerometer blocks (PCB brand, unknown model number)
+
+-PCB Piezotronics Model 482C series sensor signal conditioner. 4 channels, set up for xyz on the cantilevered light source, soon to switch to xyz on the primary mirror and y on the cantilevered light source. 
+Part number 482C15, Serial LW006102, last calibrated 08/09/2022 by H. Lynch.
+Frequency response should be in the .05Hz to 100kHz range, depending on gain settings (1x, 10x, 100x). Gain settings can be adjusted by unscrewing the top and moving around a jumper inside of it. Currently unknown jumper/gain settings.
+
+-National Instruments NI USB-6218 32 inputs, 16-bit, 250 kS/s Isolated Multifunction I/O.
+all cables plugged into the Analog Input, channels 49-54 (with more room for other cables)
+You will need to download a [driver](https://www.ni.com/en/support/downloads/drivers/download.ni-daq-mx.html#569353) from the NI website to use it.
+Seems like it has some sort of programming interface that allows you to fiddle with the settings.
