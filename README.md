@@ -15,7 +15,7 @@ Things that need to be standardized and documented:
  - LED intensity. We need to pick one voltage and stick with it. I want to see if the display can go down to millivolts, so that we can more precisely pick the voltage, rather than floating somewhere between 2.6 and 2.7 (or any other decivolt numbers)
  - Shutter speed. Currently all are being taken at 1/833, hence the filename
  - framerate. We have some tests going at once a minute, some at once a second, and some at "max" framerate (please copy the exact text of what the settings tooltip says for a setting of 0 minutes, 0 seconds between images)
- - framerate again: I am pretty sure that the images saved are a function of the display framerate, which during some tests were set to 25, some to 50, others to 52.?? 
+ - framerate again: I am pretty sure that the images saved are a function of the display framerate, which during some tests were set to 25, some to 50, others to 52.37
  - Wind: document if we're running the cleanroom fans for some of the short run tests. Currently in the filename for some of them
  - Naming convention for the filenames. Should make analysis easier.
  - Folder structure: Alex would like to make sure each test goes into its own folder.
@@ -103,6 +103,9 @@ So, a few things seem possible (all confirmed in a conversation with James):
 It seems like we're pretty keen to stay on 1/833, so let's just get rid of that from the filename.
 We're pretty keen to switch to per-test folders.
 I would like to get greater detail on the voltage and fix it in place more precisely. I also want to take a look at the max value and set voltage so that max value is like 200 out of 255 in greyscale. It probably doesn't matter.
+
+### Things we will need the code to do:
+handle situations where it doesn't see a dot at all.
 
 
 ## accelerometer data
