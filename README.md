@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the code that is meant to analyze the results of the stability tests on the reverse telescope system. 
+This is the code that is meant to analyze the results of the stability tests on the reverse telescope system.
 
 
 ## Test settings
@@ -15,7 +15,7 @@ Things that need to be standardized and documented:
  - LED intensity. We need to pick one voltage and stick with it. I want to see if the display can go down to millivolts, so that we can more precisely pick the voltage, rather than floating somewhere between 2.6 and 2.7 (or any other decivolt numbers)
  - Shutter speed. Currently all are being taken at 1/833, hence the filename
  - framerate. We have some tests going at once a minute, some at once a second, and some at "max" framerate (please copy the exact text of what the settings tooltip says for a setting of 0 minutes, 0 seconds between images)
- - framerate again: I am pretty sure that the images saved are a function of the display framerate, which during some tests were set to 25, some to 50, others to 52.?? 
+ - framerate again: I am pretty sure that the images saved are a function of the display framerate, which during some tests were set to 25, some to 50, others to 52.37
  - Wind: document if we're running the cleanroom fans for some of the short run tests. Currently in the filename for some of them
  - Naming convention for the filenames. Should make analysis easier.
  - Folder structure: Alex would like to make sure each test goes into its own folder.
@@ -49,12 +49,25 @@ Voltage set to 2.6. Gain set to 4. Binning disabled.
 
 TODO: add test information for this day.
 
-Machine was run overnight, continuing to take images once a second for 10000 frames. Should be done around 11 the next morning.
+stability: high framerate with fan on
+
+fanoff: high framerate (will need to calculate framerate. likely 25, 50 or 52.37) with fan off
+
+longrun: Secondly data for a long time. Leads to a LOT of images, so secondly long-runs are no longer recommended
+
+nightvideo: high framerate before overnight run
+
+overnightvideo: minutely images over night.
+
+
+Machine was run overnight, continuing to take images once a *minute* for 10,000 frames.
 
 ### 2025-09-19
-At 09:06 we had some construction vibration sounds, but it wasn't as bad as it usually is. Unclear on if it will show up in the data. It had a bit of a spike around 09:11, again at 9:28.
+At 09:06 we had some construction vibration sounds, but it wasn't as bad as it usually is. Unclear on if it will show up in the data. It had a bit of a spike around 09:11, again at 9:28. Wasn't paying attention to construction for the rest of the day.
 
-Continued to run until completed. Alex would like less data total. Will run over the weekend at one frame a minute. In new folder.
+Continued to run from previous night until 1373 frames. Stopped at 15:04. 
+
+Alex would like less data total. Will run over the weekend at one frame a minute. In new folder.
 
 
 ### 2025-09-22
@@ -63,6 +76,16 @@ Weekend run was still going strong. Dot has moved into the top-middle. A quick l
 Took Max framerate (52.37 fps) video for 3 minutes in its own folder
 
 Resumed one frame per minute snapshots. Took voltage with handheld voltmeter, found that it is 2.622 V. Has not been adjusted since 2022-09-18.
+
+### 2025-09-23
+
+
+### 2025-09-24
+
+### 2025-09-25
+### 2025-09-26
+During some Nate tests at 1:30 it was discovered that we were disconnected from the camera and the dot had moved off screen as we were touching things. Dot was refound, no changes to collimation, but does not map perfectly onto past data.
+
 
 ## Questions Jeff has about things
 ### FITS Format
@@ -80,3 +103,22 @@ So, a few things seem possible (all confirmed in a conversation with James):
 It seems like we're pretty keen to stay on 1/833, so let's just get rid of that from the filename.
 We're pretty keen to switch to per-test folders.
 I would like to get greater detail on the voltage and fix it in place more precisely. I also want to take a look at the max value and set voltage so that max value is like 200 out of 255 in greyscale. It probably doesn't matter.
+
+### Things we will need the code to do:
+handle situations where it doesn't see a dot at all.
+
+
+## accelerometer data
+Code written by Nate Hamme
+Hardware is: 
+
+-two 3-axis accelerometer blocks (PCB brand, unknown model number)
+
+-PCB Piezotronics Model 482C series sensor signal conditioner. 4 channels, set up for xyz on the cantilevered light source, soon to switch to xyz on the primary mirror and y on the cantilevered light source. 
+Part number 482C15, Serial LW006102, last calibrated 08/09/2022 by H. Lynch.
+Frequency response should be in the .05Hz to 100kHz range, depending on gain settings (1x, 10x, 100x). Gain settings can be adjusted by unscrewing the top and moving around a jumper inside of it. Currently unknown jumper/gain settings.
+
+-National Instruments NI USB-6218 32 inputs, 16-bit, 250 kS/s Isolated Multifunction I/O.
+all cables plugged into the Analog Input, channels 49-54 (with more room for other cables)
+You will need to download a [driver](https://www.ni.com/en/support/downloads/drivers/download.ni-daq-mx.html#569353) from the NI website to use it.
+Seems like it has some sort of programming interface that allows you to fiddle with the settings.
