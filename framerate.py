@@ -1,8 +1,13 @@
 import os
 import datetime
+import csv
+
+from docutils.nodes import field_name
+
 
 def calculate_framerate(folder_path):
     # Iterate through each subfolder in the main folder
+    results = []
     for subfolder in sorted(os.listdir(folder_path)):
         subfolder_path = os.path.join(folder_path, subfolder)
         if os.path.isdir(subfolder_path):
@@ -30,12 +35,20 @@ def calculate_framerate(folder_path):
 
             framerate = (num_files - 1) / time_diff
 
-            print(f"Folder: {subfolder}")
-            print(f"  First file: {os.path.basename(first_file)}")
-            print(f"  Last file: {os.path.basename(last_file)}")
-            print(f"  Number of files: {num_files}")
-            print(f"  Time difference (s): {time_diff:.2f}")
-            print(f"  Framerate: {framerate:.2f} frames/sec or {framerate *60:.2f} frames/min\n")
+            result = {
+                "folder": folder_path,
+                "subfolder": subfolder,
+                "first_file": first_file,
+                "last_file": last_file,
+                "num_files": len(files),
+                "time_diff_seconds": time_diff,
+                "framerate": framerate
+            }
+
+            print(result)
+            results.append(result)
+    return results
+
 
 # Set the path to the main folder
 # use os.chdir(path) to navigate in python console
@@ -46,3 +59,17 @@ def calculate_framerate(folder_path):
 #to run in from windows console do
 # from framerate import calculate_framerate
 # calculate_framerate(r"Z:/Reverse Telescope Test/20250925")
+
+
+if __name__ == "__main__":
+    fullresult = []
+    for folder in os.listdir(r"Z:/Reverse Telescope Test"):
+        this_folder = os.path.join(r"Z:/Reverse Telescope Test", folder)
+        if os.path.isdir(this_folder):
+            fullresult.append(calculate_framerate(this_folder))
+    with open("framerate.csv", "w", newline="") as csvfile:
+        fieldnames = ["folder", "subfolder", "first_file", "last_file", "num_files", "time_diff_seconds", "framerate"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for item in fullresult:
+            writer.writerow(fullresult)
