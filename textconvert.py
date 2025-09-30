@@ -3,11 +3,21 @@ import csv
 import os
 
 # Read the contents of the text file
-with open("framerate_results.txt", "r") as file:
+with open("framerate_results.txt", "r", encoding="utf-8") as file:
     lines = file.readlines()
 
-# Parse each line into a dictionary
-data = [ast.literal_eval(line.strip()) for line in lines]
+# Parse each line into a dictionary, modifying the fields to match excel sheet
+data = []
+for line in lines:
+    entry = ast.literal_eval(line.strip())
+    entry["folder"] = os.path.basename(entry["folder"])
+    entry["first_file"] = os.path.splitext(os.path.basename(entry["first_file"]))[0]
+    entry["last_file"] = os.path.splitext(os.path.basename(entry["last_file"]))[0]
+    entry["time_diff_seconds"] = float(str(entry["time_diff_seconds"]).lstrip("'"))
+    entry["framerate"] = float(str(entry["framerate"]).lstrip("'"))
+
+    data.append(entry)
+
 
 # Define the CSV file name
 csv_filename = "framerate_results_converted.csv"
