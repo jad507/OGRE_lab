@@ -107,7 +107,7 @@ def read_single_csv(
 
 
 def read_many_csvs(
-    file_paths: Iterable[Path | str] = (),
+    file_paths: Iterable[Path | str] | Path | str = (),
     directory: Optional[Path | str] = None,
     glob_pattern: str = "AccelData_*.csv",
     sort_by: str = "AbsoluteTime",
@@ -130,7 +130,11 @@ def read_many_csvs(
     """
     paths: List[Path] = []
     if file_paths:
-        paths = [Path(p) for p in file_paths]
+        if isinstance(file_paths, (str, Path)):
+            paths = [Path(file_paths)]
+        else:
+            paths = [Path(p) for p in file_paths]
+
     elif directory:
         paths = sorted(Path(directory).glob(glob_pattern))
     else:

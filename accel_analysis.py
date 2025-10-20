@@ -36,15 +36,10 @@ plt.tight_layout()
 plt.show()
 
 
-files = [
-    Path("AccelData_2025-10-14_160804_File0001.csv"),
-    Path("AccelData_2025-10-14_160804_File0002.csv"),
-    # add more...
-]
 
 # Typical: Welch PSD, 4 s segments, 50% overlap, log‑x, up to Nyquist
 figs = run_fft_overlay(
-    files,
+    source_folder,
     method="welch",          # fallback to "rfft" if SciPy not installed
     nperseg_seconds=4.0,
     noverlap_ratio=0.5,

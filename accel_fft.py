@@ -215,8 +215,11 @@ def export_psd_csvs(
         df_out.to_csv(csv_path, index=False)
 
 
+from pathlib import Path
+from typing import Iterable, Optional
+
 def run_fft_overlay(
-    files: Iterable[Path | str],
+    files: Iterable[Path | str] | Path | str,
     method: str = "welch",
     nperseg_seconds: float = 4.0,
     noverlap_ratio: float = 0.5,
@@ -225,9 +228,20 @@ def run_fft_overlay(
     log_x: bool = True,
     log_y: bool = False,
 ):
-    """
-    High-level convenience: read files -> compute spectra -> plot overlays per axis.
-    """
+    # Normalize 'files' to a list of Paths
+    file_list: list[Path]
+    if isinstance(files, (str, Path)):
+        p = Path(files)
+        if p.is_dir():
+            file_list = sorted(p.glob("AccelData_*.csv"))
+        else:
+            file_list = [p]
+    else:
+        file_list = [Path(f) for f in files]
+
+    if not file_list:
+        raise FileNotFoundError("No CSV files matched in the given input.")
+
     opts = FFTOptions(
         method=method,
         nperseg_seconds=nperseg_seconds,
@@ -238,9 +252,10 @@ def run_fft_overlay(
         log_y=log_y,
     )
 
+    # Read & process
     # Read all rows but keep file identity for per-file FFT
     # Use loader's concatenation then split per file
-    df_all = read_many_csvs(file_paths=files, sort_by="AbsoluteTime")
+    df_all = read_many_csvs(file_paths=file_list, sort_by="AbsoluteTime")
     per_file_spectra: Dict[str, Dict[str, Tuple[np.ndarray, np.ndarray]]] = {}
 
     for file_name, df_file in df_all.groupby("source_file", sort=False):
