@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from accel_fft import run_fft_overlay
 
-source_folder = Path(r"D:\Users\jad507\OneDrive - The Pennsylvania State University\Documents\AstroStats\accel\Session_2025-10-14_160804")
+source_folder = Path(r"D:\Users\jad507\OneDrive - The Pennsylvania State University\Documents\AstroStats\accel\Session_2025-10-17_084855")
 
 # Typical: Welch PSD, 4 s segments, 50% overlap, log‑x, up to Nyquist
 figs = run_fft_overlay(
     source_folder,
     method="welch",          # fallback to "rfft" if SciPy not installed
-    nperseg_seconds=4.0,
+    nperseg_seconds=60.0,
     noverlap_ratio=0.5,
     max_f_hz=None,           # e.g., 400 if you want to cap at 400 Hz
     out_dir="fft_output",    # saves PNG + CSV there (optional)

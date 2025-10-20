@@ -41,7 +41,7 @@ AXES = ["Mirror_X_g", "Mirror_Y_g", "Mirror_Z_g", "Desk_Y_g"]
 @dataclass
 class FFTOptions:
     method: str = "welch"           # "welch" (preferred) or "rfft"
-    nperseg_seconds: float = 4.0    # Welch segment length in seconds
+    nperseg_seconds: float = 60.0    # Welch segment length in seconds
     noverlap_ratio: float = 0.5     # 50% overlap
     window: str = "hann"
     detrend: str = "constant"
@@ -75,6 +75,7 @@ def _welch_psd(
     # snap nperseg to nearest power of two without exceeding
     pw2 = 1 << (nperseg.bit_length() - 1)
     nperseg = max(8, min(nperseg, pw2))
+    nperseg = min(max(8, int(round(opts.nperseg_seconds * fs))), x.size)
     noverlap = int(round(opts.noverlap_ratio * nperseg))
 
     f, Pxx = _scipy_signal.welch(
