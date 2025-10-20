@@ -9,22 +9,29 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 
+
 def _sanitize_filename(name: str, maxlen: int = 150) -> str:
-    """
-    Make a safe filename for Windows/macOS/Linux by replacing
-    illegal characters and trimming trailing dots/spaces.
-    """
-    # Replace invalid characters:  <>:"/\|?* and ASCII control chars
-    name = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", name)
-    # Collapse whitespace
+    name = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", name)  # illegal chars on Windows
     name = re.sub(r"\s+", " ", name).strip()
-    # Disallow trailing dot/space on Windows
     name = name.rstrip(". ")
-    # Avoid reserved device names on Windows
     reserved = {"CON","PRN","AUX","NUL"} | {*(f"COM{i}" for i in range(1,10))} | {*(f"LPT{i}" for i in range(1,10))}
     if name.upper() in reserved:
         name = f"_{name}_"
     return name[:maxlen]
+
+def _extract_session_prefix(paths: list[Path]) -> str | None:
+    """
+    Try to extract session prefix like 'AccelData_YYYY-MM-DD_HHMMSS' from filenames
+    e.g., 'AccelData_2025-10-14_160804_File0001.csv' -> 'AccelData_2025-10-14_160804'
+    """
+    if not paths:
+        return None
+    m = re.match(r'^(AccelData_\d{4}-\d{2}-\d{2}_\d{6})_File\d+$', paths[0].stem)
+    if m:
+        return m.group(1)
+    # Fallback: use parent folder name if it looks meaningful
+    return paths[0].parent.name or None
+
 
 try:
     from scipy import signal as _scipy_signal  # type: ignore
@@ -53,6 +60,7 @@ class FFTOptions:
     alpha: float = 0.7
     lw: float = 1.2
     out_dir: Optional[Path] = None  # if set, save figures/CSVs here
+    file_prefix: Optional[str] = None  # <--- add this
 
 
 def _welch_psd(
@@ -183,7 +191,9 @@ def plot_overlaid_spectra_by_axis(
             f, S = spectra[axis]
             ax.plot(f, S, label=file_label, alpha=opts.alpha, lw=opts.lw)
 
-        ax.set_title(f"{axis} — {opts.method.upper()}")
+        if opts.file_prefix:
+            safe_prefix = _sanitize_filename(opts.file_prefix)
+        ax.set_title(f"{safe_prefix} - {axis} — {opts.method.upper()}")
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel(y_label)
         ax.grid(True, which="both", alpha=0.3)
@@ -193,7 +203,7 @@ def plot_overlaid_spectra_by_axis(
             ax.set_xlim(left=max(1e-3, ax.get_xlim()[0]))
         if opts.log_y:
             ax.set_yscale("log")
-        ax.legend(loc="best", ncols=1, fontsize=9)
+        # ax.legend(loc="best", ncols=1, fontsize=9)
 
         if opts.tight_layout:
             fig.tight_layout()
@@ -202,7 +212,15 @@ def plot_overlaid_spectra_by_axis(
         # Save figure if requested
         if opts.out_dir:
             opts.out_dir.mkdir(parents=True, exist_ok=True)
-            fig_path = opts.out_dir / f"{axis}_{opts.method}.png"
+
+            # Build filename with session prefix if available
+            if opts.file_prefix:
+                safe_prefix = _sanitize_filename(opts.file_prefix)
+                fname = f"{safe_prefix}_{axis}_{opts.method}.png"
+            else:
+                fname = f"{axis}_{opts.method}.png"
+
+            fig_path = opts.out_dir / fname
             fig.savefig(fig_path, dpi=150)
 
     return figs
@@ -262,6 +280,7 @@ def run_fft_overlay(
     if not file_list:
         raise FileNotFoundError("No CSV files matched in the given input.")
 
+    inferred_prefix = _extract_session_prefix(file_list)
     opts = FFTOptions(
         method=method,
         nperseg_seconds=nperseg_seconds,
@@ -270,6 +289,7 @@ def run_fft_overlay(
         out_dir=(Path(out_dir) if out_dir else None),
         log_x=log_x,
         log_y=log_y,
+        file_prefix=inferred_prefix,
     )
 
     # Read & process
