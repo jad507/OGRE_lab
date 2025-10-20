@@ -7,6 +7,24 @@ from typing import Dict, Iterable, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import re
+
+def _sanitize_filename(name: str, maxlen: int = 150) -> str:
+    """
+    Make a safe filename for Windows/macOS/Linux by replacing
+    illegal characters and trimming trailing dots/spaces.
+    """
+    # Replace invalid characters:  <>:"/\|?* and ASCII control chars
+    name = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", name)
+    # Collapse whitespace
+    name = re.sub(r"\s+", " ", name).strip()
+    # Disallow trailing dot/space on Windows
+    name = name.rstrip(". ")
+    # Avoid reserved device names on Windows
+    reserved = {"CON","PRN","AUX","NUL"} | {*(f"COM{i}" for i in range(1,10))} | {*(f"LPT{i}" for i in range(1,10))}
+    if name.upper() in reserved:
+        name = f"_{name}_"
+    return name[:maxlen]
 
 try:
     from scipy import signal as _scipy_signal  # type: ignore
@@ -211,7 +229,8 @@ def export_psd_csvs(
             else:
                 data[axis] = S
         df_out = pd.DataFrame(data)
-        csv_path = out_dir / f"{file_label}_spectrum.csv"
+        safe_label = _sanitize_filename(file_label)
+        csv_path = out_dir / f"{safe_label}_spectrum.csv"
         df_out.to_csv(csv_path, index=False)
 
 
@@ -262,7 +281,7 @@ def run_fft_overlay(
         # Build a readable label: "File0001 (16:09:46)" or just filename stem
         try:
             t0 = pd.to_datetime(df_file["AbsoluteTime"].iloc[0])
-            label = f'{Path(file_name).stem} ({t0.strftime("%H:%M:%S")})'
+            label = f'{Path(file_name).stem} ({t0.strftime("%H-%M-%S")})'
         except Exception:
             label = Path(file_name).stem
 
