@@ -6,6 +6,9 @@ from datetime import datetime
 from smbus2 import SMBus
 import bme280
 import adafruit_bmp3xx
+import board
+import busio
+import digitalio
 
 # Configuration
 LOG_INTERVAL_SECONDS = 1  # Change to 1 for per-second logging
@@ -18,8 +21,10 @@ LOG_FILE = "temperature_log.csv"
 # Initialize sensor
 port = 1
 address = 0x77
-bus = SMBus(port)
-calibration_params = bme280.load_calibration_params(bus, address)
+# bus = SMBus(port)
+# calibration_params = bme280.load_calibration_params(bus, address)
+i2c = busio.I2C(board.SCL, board.SDA) 
+bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c) 
 
 # Create log file with header if it doesn't exist
 if not os.path.exists(LOG_FILE):
@@ -34,8 +39,8 @@ print("Temperature logging started...")
 try:
     while True:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data = bme280.sample(bus, address, calibration_params)
-        temperature = round(data.temperature, 2)
+        # data = bme280.sample(bus, address, calibration_params)
+        temperature = round(bmp.temperature, 2)
 
         # Log to CSV
         with open(LOG_FILE, mode='a', newline='') as file:
