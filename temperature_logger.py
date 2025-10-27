@@ -12,7 +12,7 @@ import digitalio
 
 # Configuration
 LOG_INTERVAL_SECONDS = 1  # Change to 1 for per-second logging
-HOURLY_STATUS_INTERVAL = 10  # Seconds in an hour
+HOURLY_STATUS_INTERVAL = 3600  # Seconds in an hour
 TEMP_THRESHOLD = 50.0  # Optional alert threshold (disabled by default)
 ENABLE_ALERTS = False
 ENABLE_AUTOSTART = False
@@ -34,7 +34,9 @@ if not os.path.exists(LOG_FILE):
 
 # Main loop
 last_status_time = time.time()
-print("Temperature logging started...")
+start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+start_temperature = round(bmp.temperature, 2)
+print(f"Temperature logging started @ {start_time}: Current Temperature = {start_temperature}°C")
 
 try:
     while True:
