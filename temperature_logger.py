@@ -5,10 +5,11 @@ import os
 from datetime import datetime
 from smbus2 import SMBus
 import bme280
+import adafruit_bmp3xx
 
 # Configuration
-LOG_INTERVAL_SECONDS = 60  # Change to 1 for per-second logging
-HOURLY_STATUS_INTERVAL = 3600  # Seconds in an hour
+LOG_INTERVAL_SECONDS = 1  # Change to 1 for per-second logging
+HOURLY_STATUS_INTERVAL = 10  # Seconds in an hour
 TEMP_THRESHOLD = 50.0  # Optional alert threshold (disabled by default)
 ENABLE_ALERTS = False
 ENABLE_AUTOSTART = False
@@ -16,7 +17,7 @@ LOG_FILE = "temperature_log.csv"
 
 # Initialize sensor
 port = 1
-address = 0x76
+address = 0x77
 bus = SMBus(port)
 calibration_params = bme280.load_calibration_params(bus, address)
 
