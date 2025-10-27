@@ -1,5 +1,5 @@
 
-function accel()
+function accel_readout_headless()
     % Main function wrapper for MATLAB compliance
     
     clc; clear; close all;
@@ -12,7 +12,7 @@ function accel()
     CONFIG.hardware_gain = 100;
     CONFIG.sensitivity = 0.1;
     
-    CONFIG.log_directory = 'C:\Users\tater\OneDrive\Desktop\LAB Files\Accelerometer Data';
+    CONFIG.log_directory = 'C:\Users\jad507\OneDrive - The Pennsylvania State University\Pictures\Reverse Telescope Test\accel';
     CONFIG.samples_per_file = 300000;  % 5 minutes per file
     CONFIG.display_rate = 25;
     CONFIG.display_seconds = 10;       % Exactly 10 seconds display window
@@ -26,7 +26,7 @@ function accel()
         mkdir(CONFIG.log_directory);
     end
     
-    session_id = datestr(now, 'yyyy-mm-dd_HHMMSS');
+    session_id = char(datetime('now', 'Format', 'yyyy-MM-dd_HHmmss'));
     session_dir = fullfile(CONFIG.log_directory, ['Session_', session_id]);
     mkdir(session_dir);
     fprintf('Session directory: %s\n', session_dir);
@@ -101,6 +101,10 @@ function accel()
     
     %% DISPLAY TIMER - MATLAB COMPLIANT
     SESSION_DATA.display_timer = timer();
+    set(SESSION_DATA.display_timer, 'ExecutionMode', 'fixedRate');
+    set(SESSION_DATA.display_timer, 'Period', 1/CONFIG.display_rate);
+    set(SESSION_DATA.display_timer, 'TimerFcn', @display_callback_time_fixed);  % UPDATED: Time-fixed display
+    
     
     %% START SYSTEM
     fprintf('\n=== INITIALIZING ===\n');

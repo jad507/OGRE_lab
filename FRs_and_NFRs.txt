@@ -1,0 +1,60 @@
+Functional Requirements:
+
+FR1: The system shall read ambient temperature data from the BMP388 sensor connected to the Raspberry Pi.
+FR2: The system shall log temperature readings with timestamps at a configurable interval (e.g., once per second or once per minute).
+FR3: The system shall store temperature logs in a local file on the Raspberry Pi.
+FR4: The system shall allow configuration of the logging interval via a settings file or command-line argument.
+FR5 (optional): The system shall alert the user if the temperature exceeds a predefined threshold.
+FR6: The system shall run continuously without manual intervention unless stopped.
+FR7 (optional): The system shall start automatically on Raspberry Pi boot.
+FR8: The system shall provide a summary of temperature trends over time (e.g., average, max, min).
+FR9: The system shall support exporting the temperature log in CSV format.
+FR10: The system shall allow the user to query temperature logs for a specific time range.
+FR11: The system shall output a status message to the terminal once per hour.
+
+Non-Functional Requirements:
+
+FR1:
+  - Functional Suitability: Functional Correctness: The system must read temperature data from the BMP388 sensor with an accuracy of ±0.5°C for 99.9% of readings.
+  - Reliability: Fault Tolerance: The system must retry sensor reads up to 3 times in case of transient I2C communication failures.
+
+FR2:
+  - Performance Efficiency: Time Behavior: The system must complete each temperature read and log operation within 100 milliseconds.
+  - Functional Suitability: Functional Completeness: The system must support logging intervals from 1 second to 1 hour.
+
+FR3:
+  - Performance Efficiency: Resource Utilization: The system must use no more than 10 MB of memory during logging operations.
+  - Reliability: Recoverability: In case of a system crash, the log file must be recoverable with no more than 1 minute of data loss.
+
+FR4:
+  - Usability: Operability: The configuration file must use a clear key-value format with inline comments for guidance.
+  - Maintainability: Modifiability: Changes to the logging interval must not require restarting the system.
+
+FR5:
+  - Safety: Hazard Warning: Alerts must be issued within 5 seconds of detecting a threshold breach.
+  - Security: Integrity: Alert messages must be logged and timestamped to prevent tampering.
+
+FR6:
+  - Reliability: Availability: The system must maintain 99.9% uptime during continuous operation over a 7-day period.
+  - Maintainability: Testability: The system must include a self-check routine that runs every hour to verify sensor and logging health.
+
+FR7:
+  - Flexibility: Installability: The system must provide a one-line installation script to enable auto-start via systemd.
+  - Reliability: Recoverability: On boot failure, the system must log the error and attempt restart within 30 seconds.
+
+FR8:
+  - Functional Suitability: Functional Appropriateness: The system must calculate average, max, and min temperature values for each 24-hour period.
+  - Performance Efficiency: Time Behavior: Summary calculations must complete within 1 second for up to 10,000 log entries.
+
+FR9:
+  - Compatibility: Interoperability: The exported CSV must be compatible with Excel, LibreOffice, and Python pandas.
+  - Usability: Self-descriptiveness: The CSV file must include a header row with column names and units.
+
+FR10:
+  - Functional Suitability: Functional Completeness: The system must support querying logs by start and end timestamps with second-level granularity.
+  - Performance Efficiency: Time Behavior: Queries must return results within 500 milliseconds for up to 100,000 entries.
+
+FR11:
+  - Usability: User Engagement: The hourly message must include timestamp, current temperature, and system status in a concise format.
+  - Performance Efficiency: Time Behavior: The hourly message must be printed within 1 second of the scheduled time.
+
