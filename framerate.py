@@ -3,7 +3,7 @@ import datetime
 import csv
 
 from docutils.nodes import field_name
-
+# This code is to go through the reverse telescope camera data folders and output a human-readable list of folders and their framerates.
 
 def calculate_framerate(folder_path):
     # Iterate through each subfolder in the main folder

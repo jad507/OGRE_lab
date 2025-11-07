@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from accel_fft import run_fft_overlay
 
+# This script will take a look at all the Accelerometer Sessions in all the folders in accel, smash together all the
+# data from all the individual CSVs, and output the collective FFTs on a per-session basis. Uses accel_fft to hold the
+# various functions.
 # Your starting point
 source_folder = Path(r"D:\Users\jad507\OneDrive - The Pennsylvania State University\Documents\AstroStats\accel\Session_2025-10-14_160804")
 

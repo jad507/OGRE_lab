@@ -8,7 +8,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import re
-
+# These functions will take a look at all the Accelerometer Sessions in all the folders in accel, smash together all the
+# data from all the individual CSVs, and output the collective FFTs on a per-session basis. Uses accel_analysis as the
+# script
 
 def _sanitize_filename(name: str, maxlen: int = 150) -> str:
     name = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", name)  # illegal chars on Windows
