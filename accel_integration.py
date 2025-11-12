@@ -1,3 +1,5 @@
+from typing import Optional, Any
+
 import pandas as pd
 import numpy as np
 from scipy.integrate import simpson, cumulative_simpson, solve_ivp
@@ -10,34 +12,35 @@ import matplotlib.pyplot as plt
 source_folder = pathlib.Path(r"D:\Reverse Telescope Test\accel\Session_2025-10-29_163326")
 df = pd.read_csv(pathlib.Path.joinpath(source_folder, "AccelData_2025-10-29_163326_File0001.csv"))
 t = df['RelativeTime_s'].values
-ax = df['Mirror_X_g'].values * 9.80665
-# ay = df['Mirror_Y_g'].values * 9.80665
-# az = df['Mirror_Z_g'].values * 9.80665
+ax = df['Mirror_X_g'].values * 386.1 # accel output from matlab is in g's. g = 386.1 inches/sec^2
+ay = df['Mirror_Y_g'].values * 386.1
+az = df['Mirror_Z_g'].values * 386.1
+aarm = df['Desk_Y_g'].values * 386.1
 
-# Integration using Simpson’s Rule
-# Velocity from acceleration
-vx = cumulative_simpson(y=ax, x=t, initial=0)
-# vx = [simpson(ax[:i+1], t[:i+1]) for i in range(len(t))]
-# vy = [simpson(ay[:i+1], t[:i+1]) for i in range(len(t))]
-# vz = [simpson(az[:i+1], t[:i+1]) for i in range(len(t))]
+def plotaccels(
+        t: np.ndarray[Any, np.dtype[np.floating[Any]]],
+        a: np.ndarray[Any, np.dtype[np.floating[Any]]],
+        axis: str,
+        suppressPosition: Optional = False) -> tuple[np.ndarray, Optional[np.ndarray]]:
+    if len(t) != len(a):
+        raise ValueError("All input arrays must have the same length.")
+    v = cumulative_simpson(y=a, x=t, initial=0)
+    p = cumulative_simpson(y=v, x=t, initial=0)
 
-# Position from velocity
-px = cumulative_simpson(y=vx, x=t, initial=0)
-# px = [simpson(vx[:i+1], t[:i+1]) for i in range(len(t))]
-# py = [simpson(vy[:i+1], t[:i+1]) for i in range(len(t))]
-# pz = [simpson(vz[:i+1], t[:i+1]) for i in range(len(t))]
+    plt.figure(figsize=(10, 6))
+    plt.plot(t, a, label=f'{axis} Acceleration (in/s²)')
+    plt.plot(t, v, label=f'{axis} Velocity (in/s)')
+    if not suppressPosition:
+        plt.plot(t, p, label=f'{axis} Displacement (in)')
+    plt.legend()
+    plt.xlabel('Time (s)')
+    plt.ylabel('Value')
+    plt.title(f'{axis} Acceleration → Velocity → Displacement')
+    plt.show()
 
+    return v, p
 
-plt.figure(figsize=(10,6))
-plt.plot(t, ax, label='Acceleration (m/s²)')
-plt.plot(t, vx, label='Velocity (m/s)')
-# plt.plot(t, px, label='Displacement (m)')
-plt.legend()
-plt.xlabel('Time (s)')
-plt.ylabel('Value')
-plt.title('Acceleration → Velocity → Displacement')
-plt.show()
-
+vx, px = plotaccels(t, ax, "X")
 
 # Integration using Runge-Kutta (solve_ivp)
 # Interpolation for acceleration

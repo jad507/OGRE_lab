@@ -17,7 +17,7 @@ function accel()
     CONFIG.display_rate = 25;
     CONFIG.display_seconds = 10;       % Exactly 10 seconds display window
     CONFIG.decimation_factor = 20;
-    CONFIG.smoothing_factor = 0.1;
+    CONFIG.smoothing_factor = 0.0;
     
     fprintf('=== Reverse Telescope Accelerometer DAQ ===\n');
     
