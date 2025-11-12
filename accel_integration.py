@@ -9,8 +9,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Load data
-source_folder = pathlib.Path(r"D:\Reverse Telescope Test\accel\Session_2025-10-29_163326")
-df = pd.read_csv(pathlib.Path.joinpath(source_folder, "AccelData_2025-10-29_163326_File0001.csv"))
+source_folder = pathlib.Path(r"D:\Reverse Telescope Test\accel\Session_2025-11-12_120427")
+df = pd.read_csv(pathlib.Path.joinpath(source_folder, "AccelData_2025-11-12_120427_File0001.csv"))
 t = df['RelativeTime_s'].values
 ax = df['Mirror_X_g'].values * 386.1 # accel output from matlab is in g's. g = 386.1 inches/sec^2
 ay = df['Mirror_Y_g'].values * 386.1
