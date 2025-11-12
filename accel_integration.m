@@ -22,14 +22,16 @@ ay_fun = @(tt) interp1(t, ay, tt, 'linear');
 az_fun = @(tt) interp1(t, az, tt, 'linear');
 
 % Velocity from acceleration
-vx = arrayfun(@(tt) integral(ax_fun, t(1), tt, 'Method', 'Simpson'), t);
-vy = arrayfun(@(tt) integral(ay_fun, t(1), tt, 'Method', 'Simpson'), t);
-vz = arrayfun(@(tt) integral(az_fun, t(1), tt, 'Method', 'Simpson'), t);
+vx = arrayfun(@(tt) integral(ax_fun, t(1), tt), t);
+%vy = arrayfun(@(tt) integral(ay_fun, t(1), tt, 'Method', 'Simpson'), t);
+%vz = arrayfun(@(tt) integral(az_fun, t(1), tt, 'Method', 'Simpson'), t);
 
 % Position from velocity
-px = arrayfun(@(tt) integral(@(tau) interp1(t, vx, tau, 'linear'), t(1), tt, 'Method', 'Simpson'), t);
-py = arrayfun(@(tt) integral(@(tau) interp1(t, vy, tau, 'linear'), t(1), tt, 'Method', 'Simpson'), t);
-pz = arrayfun(@(tt) integral(@(tau) interp1(t, vz, tau, 'linear'), t(1), tt, 'Method', 'Simpson'), t);
+px = arrayfun(@(tt) integral(@(tau) interp1(t, vx, tau, 'linear'), t(1), tt), t);
+%py = arrayfun(@(tt) integral(@(tau) interp1(t, vy, tau, 'linear'), t(1), tt, 'Method', 'Simpson'), t);
+%pz = arrayfun(@(tt) integral(@(tau) interp1(t, vz, tau, 'linear'), t(1), tt, 'Method', 'Simpson'), t);
+
+plot(t,px)
 
 %%Runge-Kutta with ODE45
 

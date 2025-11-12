@@ -112,11 +112,13 @@ handle situations where it doesn't see a dot at all.
 Code written by Nate Hamme
 Hardware is: 
 
--two 3-axis accelerometer blocks (PCB brand, unknown model number)
+-two 3-axis accelerometer blocks (PCB piezotronics brand, ICP product line, model 356A15). 
+According to the datasheet, it has .1V/g
 
 -PCB Piezotronics Model 482C series sensor signal conditioner. 4 channels, set up for xyz on the cantilevered light source, soon to switch to xyz on the primary mirror and y on the cantilevered light source. 
 Part number 482C15, Serial LW006102, last calibrated 08/09/2022 by H. Lynch.
 Frequency response should be in the .05Hz to 100kHz range, depending on gain settings (1x, 10x, 100x). Gain settings can be adjusted by unscrewing the top and moving around a jumper inside of it. Currently unknown jumper/gain settings.
+According to Nate's code, gain is set to 100x.
 
 -National Instruments NI USB-6218 32 inputs, 16-bit, 250 kS/s Isolated Multifunction I/O.
 all cables plugged into the Analog Input, channels 49-54 (with more room for other cables)
