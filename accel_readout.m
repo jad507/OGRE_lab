@@ -1,5 +1,5 @@
 
-function accel()
+function accel_readout()
     % Main function wrapper for MATLAB compliance
     
     clc; clear; close all;
@@ -9,8 +9,8 @@ function accel()
     CONFIG.channels = [17, 18, 19, 20];
     CONFIG.channel_names = {'Cass_Y', 'Cass_X', 'Cass_Z', 'Desk_Y'};
     CONFIG.sample_rate = 1000;
-    CONFIG.hardware_gain = 100;
-    CONFIG.sensitivity = 0.1;
+    CONFIG.hardware_gain = 100; % signal conditions gain set to 100
+    CONFIG.sensitivity = 0.1; % 100mV/g
     
     CONFIG.log_directory = 'C:\Users\jad507\OneDrive - The Pennsylvania State University\Pictures\Reverse Telescope Test\accel';
     CONFIG.samples_per_file = 300000;  % 5 minutes per file

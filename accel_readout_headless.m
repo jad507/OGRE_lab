@@ -9,8 +9,8 @@ function accel_readout_headless()
     CONFIG.channels = [17, 18, 19, 20];
     CONFIG.channel_names = {'Mirror_Y', 'Mirror_X', 'Mirror_Z', 'Desk_Y'};
     CONFIG.sample_rate = 1000;
-    CONFIG.hardware_gain = 100;
-    CONFIG.sensitivity = 0.1;
+    CONFIG.hardware_gain = 100; % 100x gain from signal conditioner
+    CONFIG.sensitivity = 0.1; %.1 V/G
     
     CONFIG.log_directory = 'C:\Users\jad507\OneDrive - The Pennsylvania State University\Pictures\Reverse Telescope Test\accel';
     CONFIG.samples_per_file = 300000;  % 5 minutes per file

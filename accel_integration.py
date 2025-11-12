@@ -41,6 +41,9 @@ def plotaccels(
     return v, p
 
 vx, px = plotaccels(t, ax, "X")
+vy, py = plotaccels(t, ay, "Y")
+vz, pz = plotaccels(t, az, "Z")
+varm, parm = plotaccels(t, aarm, "Desk Y")
 
 # Integration using Runge-Kutta (solve_ivp)
 # Interpolation for acceleration
