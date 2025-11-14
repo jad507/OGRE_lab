@@ -14,10 +14,10 @@ function accel_readout_headless()
     
     CONFIG.log_directory = 'C:\Users\jad507\OneDrive - The Pennsylvania State University\Pictures\Reverse Telescope Test\accel';
     CONFIG.samples_per_file = 300000;  % 5 minutes per file
-    CONFIG.display_rate = 25;
+    CONFIG.display_rate = 2;
     CONFIG.display_seconds = 10;       % Exactly 10 seconds display window
     CONFIG.decimation_factor = 20;
-    CONFIG.smoothing_factor = 0.1;
+    CONFIG.smoothing_factor = 0.0;
     
     fprintf('=== Reverse Telescope Accelerometer DAQ ===\n');
     
