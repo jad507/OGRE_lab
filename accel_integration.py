@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 source_folder = pathlib.Path(r"D:\Reverse Telescope Test\accel\Session_2025-10-29_163326")
 csv_files = glob.glob(str(source_folder / "*.csv"))
 try :
-    df_list = [pd.read_csv(f) for f in csv_files]
+    df_list = [pd.read_csv(f) for f in csv_files[0:50]] # 50 files will eat up about 8 gigs of ram
     df = pd.concat(df_list, ignore_index=True)
 except MemoryError as e:
     print("Memory error, you may have too much data.")
