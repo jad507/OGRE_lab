@@ -12,6 +12,8 @@ The product page is https://www.adafruit.com/product/3966
 The sample code is available at https://learn.adafruit.com/adafruit-bmp388-bmp390-bmp3xx/python-circuitpython which
 also lists instructions on how to install the libraries we use.
 Other RISE examples are included in this /temperature/ folder.
+uses adafruit libraries:
+    pip install adafruit-circuitpython-bme280 adafruit-circuitpython-bmp3xx
 """
 import time
 import csv

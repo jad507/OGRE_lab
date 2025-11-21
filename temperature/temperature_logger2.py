@@ -7,29 +7,36 @@ a concern that humidity may be effecting the 3D printed parts, and to help asses
 Aluminum parts.
 
 This temperature logger was meant to run on a Raspberry Pi and multiple independent temperature/humidity sensors.
-SHT45
-MCP9808
-HDC3022
-
+SHT45 - Sensiron Temperature/Humidity, I2C communication, STEMMA QT connectors
+    https://www.adafruit.com/product/6174
+     ΔRH = ±1.0 %RH, ΔT = ±0.1 °C
+     has a internal heater for if you're trying to operate at low temp (rated for -40 C) or to boil off condensation
+MCP9808 - High Precision Temperature, I2C communication, pin connectors only
+    https://www.adafruit.com/product/1782#technical-details
+    0.25°C typical accuracy over -40°C to 125°C range (0.5°C guaranteed max from -20°C to 100°C)
+    0.0625°C resolution
+HDC3022 - TI Temperature/Humidity, I2C communication, STEMMA QT connectors
+    https://www.adafruit.com/product/5989
+    ΔRH = ±.5 %RH, ΔT = ±0.1 °C
 This is an upgrade over the BMP388 temperature/pressure sensor, both orginally meant
 for use in the Rockets for Inclusive Science Education (RISE) program as an altimeter and video data collector.
 
-The BMP388 communicates over I2C, with temperature accuracy of +/- 0.5 degrees C.
-The product page is https://www.adafruit.com/product/3966
-The sample code is available at https://learn.adafruit.com/adafruit-bmp388-bmp390-bmp3xx/python-circuitpython which
-also lists instructions on how to install the libraries we use.
-Other RISE examples are included in this /temperature/ folder.
+Uses adafruit libraries:
+    pip install adafruit-circuitpython-sht4x adafruit-circuitpython-mcp9808 adafruit-circuitpython-hdc302x
 """
 import time
 import csv
 import os
 from datetime import datetime
-from smbus2 import SMBus
-import bme280
 import adafruit_bmp3xx
 import board
 import busio
 import digitalio
+import adafruit_sht4x
+import adafruit_mcp9808
+import adafruit_hdc302x
+
+TRUE = True
 
 #
 
@@ -38,22 +45,45 @@ LOG_INTERVAL_SECONDS = 1  # Change to 1 for per-second logging
 HOURLY_STATUS_INTERVAL = 3600  # Seconds in an hour
 TEMP_THRESHOLD = 50.0  # Optional alert threshold (disabled by default)
 ENABLE_ALERTS = False
-ENABLE_AUTOSTART = False
+ENABLE_AUTOSTART = False # Not yet implemented
+SHT45_ENABLED = True
+MCP9808_ENABLED = True
+HDC3022_ENABLED = True
 LOG_FILE = "temperature_log.csv"
 
-# Initialize sensor
-port = 1
-address = 0x77
-# bus = SMBus(port)
-# calibration_params = bme280.load_calibration_params(bus, address)
-i2c = busio.I2C(board.SCL, board.SDA) 
-bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c) 
+def initializeSensors(sht45=True, mcp9808=True, hdc3022=True):
+    # Initialize sensors
+    port = 1
+    sht_address = 0x44 # SHT45 I2C address is 0x44 and cannot be changed (a manufacturer limitation)
+    mcp_address = 0x18 # Default address printed on circuit card. Can be changed to with soldered jumpers.
+    hdc_address = 0x45 # Default is 0x44. Solder Jumper A0 closed to get to 0x45. Can otherwise be 0x46, or 0x47
+    i2c = board.I2C()
+    if sht45:
+        sht = adafruit_sht4x.SHT4x(i2c)
+        print("Found SHT45 with serial number", hex(sht.serial_number))
+        sht.mode = adafruit_sht4x.Mode.NOHEAT_HIGHPRECISION
+        # Can also set the mode to enable heater
+        # sht.mode = adafruit_sht4x.Mode.LOWHEAT_100MS
+        print("Current mode is: ", adafruit_sht4x.Mode.string[sht.mode])
+    if mcp9808:
+        mcp = adafruit_mcp9808.MCP9808(i2c, address=mcp_address)
+        # To initialise using a specified address:
+        # Necessary when, for example, connecting A0 to VDD to make address=0x19
+        # mcp = adafruit_mcp9808.MCP9808(i2c_bus, address=0x19)
+    if hdc3022:
+        hdc = adafruit_hdc302x.HDC302x(i2c, address=hdc_address)
 
-# Create log file with header if it doesn't exist
-if not os.path.exists(LOG_FILE):
-    with open(LOG_FILE, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Timestamp", "Temperature_C"])
+
+def create_log_file(sht45=True, mcp9808=True, hdc3022=True):
+    # Create log file with header if it doesn't exist
+    if not os.path.exists(LOG_FILE):
+        with open(LOG_FILE, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Timestamp", "Temperature_C"])
+
+
+
+
 
 # Main loop
 last_status_time = time.time()
