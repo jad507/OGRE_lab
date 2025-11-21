@@ -41,7 +41,8 @@ def plotaccels(
         suppressVelocity: Optional = False) -> tuple[np.ndarray, Optional[np.ndarray]]:
     if len(t) != len(a):
         raise ValueError("All input arrays must have the same length.")
-
+    if suppressVelocity :
+        suppressPosition = True
     plt.figure(figsize=(10, 6))
     v=None
     p=None

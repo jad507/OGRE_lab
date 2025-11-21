@@ -2,9 +2,16 @@
 This script is a Temperature Logger for the Reverse Telescope system in the OGRE Lab, meant to help diagnose drift and
 defocus errors at long time-frames (errors across hours/days) that we believed may be due to the building's HVAC.
 Those errors have an unknown relationship (and might be totally independent of) vibrations experienced at short time-frames
-(15 hz to 1 hz) that we were addressing through standard vibration mitigation bladders and rubber pads.
+(15 hz to 1 hz) that we were addressing through standard vibration mitigation bladders and rubber pads. There is also
+a concern that humidity may be effecting the 3D printed parts, and to help assess if those should be replaced with
+Aluminum parts.
 
-This temperature logger was meant to run on a Raspberry Pi and BMP388 temperature/pressure sensor, both orginally meant
+This temperature logger was meant to run on a Raspberry Pi and multiple independent temperature/humidity sensors.
+SHT45
+MCP9808
+HDC3022
+
+This is an upgrade over the BMP388 temperature/pressure sensor, both orginally meant
 for use in the Rockets for Inclusive Science Education (RISE) program as an altimeter and video data collector.
 
 The BMP388 communicates over I2C, with temperature accuracy of +/- 0.5 degrees C.
@@ -24,7 +31,7 @@ import board
 import busio
 import digitalio
 
-# Temperature Logger using the Raspberry Pi and BMP388 temperature/pressure sensor
+#
 
 # Configuration
 LOG_INTERVAL_SECONDS = 1  # Change to 1 for per-second logging

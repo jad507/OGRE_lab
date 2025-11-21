@@ -36,5 +36,6 @@ plt.title('Temperature Over Time')
 plt.xlabel('Date')
 plt.ylabel('Temperature (°F)')
 plt.tight_layout()
-plt.show()
+
 plt.savefig('temperature_overtime.png')
+plt.show()
