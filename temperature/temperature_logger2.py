@@ -23,6 +23,9 @@ for use in the Rockets for Inclusive Science Education (RISE) program as an alti
 
 Uses adafruit libraries:
     pip install adafruit-circuitpython-sht4x adafruit-circuitpython-mcp9808 adafruit-circuitpython-hdc302x
+Commandline stuff to test if i2c is working as intended:
+sudo apt-get install i2c-tools
+i2cdetect -y 1
 """
 import time
 import csv
@@ -46,7 +49,7 @@ ENABLE_AUTOSTART = False # Not yet implemented
 SHT45_ENABLED = True
 MCP9808_ENABLED = True
 HDC3022_ENABLED = True
-LOG_FILE = "temperature_log.csv"
+LOG_FILE = "temperature_log2.csv"
 
 class DisabledSensor:
     @property
@@ -95,43 +98,42 @@ def create_log_file(sht45=True, mcp9808=True, hdc3022=True):
     if not os.path.exists(LOG_FILE):
         with open(LOG_FILE, mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["Timestamp", "SHT_Temperature_C",  "MCP_Temperature_C", "HDC_Temperature_C", "SHT_Relative_Humidity_C", "HDC_Relative_Humidity"])
+            writer.writerow(["Timestamp", "SHT_Temperature_C",  "MCP_Temperature_C", "HDC_Temperature_C", "SHT_Relative_Humidity", "HDC_Relative_Humidity"])
 
 
 
+if __name__():
+    # Main loop
+    sht, mcp, hdc = initializeSensors()
+    create_log_file()
+    last_status_time = time.time()
+    start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    start_temperatures = [round(sht.temperature, 2), round(mcp.temperature, 2), round(hdc.temperature, 2)]
+    start_humidities = [round(sht.relative_humidity,2), round(hdc.relative_humidity,2)]
+    print(f"Temperature logging started @ {start_time}: Current Temperatures = {start_temperatures}°C. Current Humidities = {start_humidities}")
 
+    try:
+        while True:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # data = bme280.sample(bus, address, calibration_params)
+            temperatures = [round(sht.temperature, 2), round(mcp.temperature, 2), round(hdc.temperature, 2)]
+            humidities = [round(sht.relative_humidity, 2), round(hdc.relative_humidity, 2)]
 
-# Main loop
-sht, mcp, hdc = initializeSensors()
-create_log_file()
-last_status_time = time.time()
-start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-start_temperatures = [round(sht.temperature, 2), round(mcp.temperature, 2), round(hdc.temperature, 2)]
-start_humidities = [round(sht.relative_humidity,2), round(hdc.relative_humidity,2)]
-print(f"Temperature logging started @ {start_time}: Current Temperatures = {start_temperatures}°C. Current Humidities = {start_humidities}")
+            # Log to CSV
+            with open(LOG_FILE, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([current_time, *temperatures, *humidities])
 
-try:
-    while True:
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # data = bme280.sample(bus, address, calibration_params)
-        temperatures = [round(sht.temperature, 2), round(mcp.temperature, 2), round(hdc.temperature, 2)]
-        humidities = [round(sht.relative_humidity, 2), round(hdc.relative_humidity, 2)]
+            # Optional alert
+            if ENABLE_ALERTS and temperatures[0] > TEMP_THRESHOLD:
+                print(f"ALERT: Temperature exceeded threshold at {current_time}: {temperatures}°C")
 
-        # Log to CSV
-        with open(LOG_FILE, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow([current_time, *temperatures, *humidities])
+            # Hourly status output
+            if time.time() - last_status_time >= HOURLY_STATUS_INTERVAL:
+                print(f"Status Update @ {current_time}: Current Temperature = {temperatures}°C. Current Humidities = {humidities}")
+                last_status_time = time.time()
 
-        # Optional alert
-        if ENABLE_ALERTS and temperatures[0] > TEMP_THRESHOLD:
-            print(f"ALERT: Temperature exceeded threshold at {current_time}: {temperatures}°C")
+            time.sleep(LOG_INTERVAL_SECONDS)
 
-        # Hourly status output
-        if time.time() - last_status_time >= HOURLY_STATUS_INTERVAL:
-            print(f"Status Update @ {current_time}: Current Temperature = {temperatures}°C. Current Humidities = {humidities}")
-            last_status_time = time.time()
-
-        time.sleep(LOG_INTERVAL_SECONDS)
-
-except KeyboardInterrupt:
-    print("Temperature logging stopped by user.")
+    except KeyboardInterrupt:
+        print("Temperature logging stopped by user.")
