@@ -102,7 +102,7 @@ def create_log_file(sht45=True, mcp9808=True, hdc3022=True):
 
 
 
-if __name__():
+if __name__ == "__main__":
     # Main loop
     sht, mcp, hdc = initializeSensors()
     create_log_file()
