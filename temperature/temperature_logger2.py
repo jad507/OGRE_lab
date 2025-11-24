@@ -28,6 +28,7 @@ import time
 import csv
 import os
 from datetime import datetime
+from typing import Tuple
 import adafruit_bmp3xx
 import board
 import busio
@@ -35,10 +36,6 @@ import digitalio
 import adafruit_sht4x
 import adafruit_mcp9808
 import adafruit_hdc302x
-
-TRUE = True
-
-#
 
 # Configuration
 LOG_INTERVAL_SECONDS = 1  # Change to 1 for per-second logging
@@ -50,6 +47,18 @@ SHT45_ENABLED = True
 MCP9808_ENABLED = True
 HDC3022_ENABLED = True
 LOG_FILE = "temperature_log.csv"
+
+class DisabledSensor:
+    @property
+    def temperature(self):
+        return 0.0
+    @property
+    def relative_humidity(self):
+        return 0.0
+    @property
+    def measurements(self) -> Tuple[float, float]:
+        return (self.temperature, self.relative_humidity)
+
 
 def initializeSensors(sht45=True, mcp9808=True, hdc3022=True):
     # Initialize sensors
@@ -65,13 +74,20 @@ def initializeSensors(sht45=True, mcp9808=True, hdc3022=True):
         # Can also set the mode to enable heater
         # sht.mode = adafruit_sht4x.Mode.LOWHEAT_100MS
         print("Current mode is: ", adafruit_sht4x.Mode.string[sht.mode])
+    else:
+        sht = DisabledSensor()
     if mcp9808:
         mcp = adafruit_mcp9808.MCP9808(i2c, address=mcp_address)
         # To initialise using a specified address:
         # Necessary when, for example, connecting A0 to VDD to make address=0x19
         # mcp = adafruit_mcp9808.MCP9808(i2c_bus, address=0x19)
+    else:
+        mcp = DisabledSensor()
     if hdc3022:
         hdc = adafruit_hdc302x.HDC302x(i2c, address=hdc_address)
+    else:
+        hdc = DisabledSensor()
+    return [sht, mcp, hdc]
 
 
 def create_log_file(sht45=True, mcp9808=True, hdc3022=True):
@@ -79,36 +95,40 @@ def create_log_file(sht45=True, mcp9808=True, hdc3022=True):
     if not os.path.exists(LOG_FILE):
         with open(LOG_FILE, mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["Timestamp", "Temperature_C"])
+            writer.writerow(["Timestamp", "SHT_Temperature_C",  "MCP_Temperature_C", "HDC_Temperature_C", "SHT_Relative_Humidity_C", "HDC_Relative_Humidity"])
 
 
 
 
 
 # Main loop
+sht, mcp, hdc = initializeSensors()
+create_log_file()
 last_status_time = time.time()
 start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-start_temperature = round(bmp.temperature, 2)
-print(f"Temperature logging started @ {start_time}: Current Temperature = {start_temperature}°C")
+start_temperatures = [round(sht.temperature, 2), round(mcp.temperature, 2), round(hdc.temperature, 2)]
+start_humidities = [round(sht.relative_humidity,2), round(hdc.relative_humidity,2)]
+print(f"Temperature logging started @ {start_time}: Current Temperatures = {start_temperatures}°C. Current Humidities = {start_humidities}")
 
 try:
     while True:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # data = bme280.sample(bus, address, calibration_params)
-        temperature = round(bmp.temperature, 2)
+        temperatures = [round(sht.temperature, 2), round(mcp.temperature, 2), round(hdc.temperature, 2)]
+        humidities = [round(sht.relative_humidity, 2), round(hdc.relative_humidity, 2)]
 
         # Log to CSV
         with open(LOG_FILE, mode='a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([current_time, temperature])
+            writer.writerow([current_time, *temperatures, *humidities])
 
         # Optional alert
-        if ENABLE_ALERTS and temperature > TEMP_THRESHOLD:
-            print(f"ALERT: Temperature exceeded threshold at {current_time}: {temperature}°C")
+        if ENABLE_ALERTS and temperatures[0] > TEMP_THRESHOLD:
+            print(f"ALERT: Temperature exceeded threshold at {current_time}: {temperatures}°C")
 
         # Hourly status output
         if time.time() - last_status_time >= HOURLY_STATUS_INTERVAL:
-            print(f"Status Update @ {current_time}: Current Temperature = {temperature}°C")
+            print(f"Status Update @ {current_time}: Current Temperature = {temperatures}°C. Current Humidities = {humidities}")
             last_status_time = time.time()
 
         time.sleep(LOG_INTERVAL_SECONDS)
