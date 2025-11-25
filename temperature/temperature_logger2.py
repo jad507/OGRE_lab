@@ -49,7 +49,7 @@ ENABLE_AUTOSTART = False # Not yet implemented
 SHT45_ENABLED = True
 MCP9808_ENABLED = True
 HDC3022_ENABLED = True
-LOG_FILE = "temperature_log2.csv"
+LOG_FILE = "temperature_log_thanksgiving.csv"
 
 class DisabledSensor:
     @property
@@ -102,7 +102,7 @@ def create_log_file(sht45=True, mcp9808=True, hdc3022=True):
 
 
 
-if __name__():
+if __name__ == "__main__":
     # Main loop
     sht, mcp, hdc = initializeSensors()
     create_log_file()
